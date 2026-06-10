@@ -121,6 +121,10 @@ receivers:
             enabled: true
 exporters:
   debug:
+  elasticsearch:
+    endpoints: ["http://host.docker.internal:9200"]
+    user: elastic
+    password: changeme
   otlp:
     endpoint: "jaeger:4317"
     tls:
@@ -166,15 +170,15 @@ service:
     traces:
       receivers: [otlp]
       processors: [resourcedetection, memory_limiter, transform]
-      exporters: [otlp, debug, spanmetrics]
+      exporters: [debug, spanmetrics, elasticsearch]
     metrics:
       receivers: [docker_stats, httpcheck/frontend-proxy, hostmetrics, nginx, otlp, postgresql, redis, spanmetrics]
       processors: [resourcedetection, memory_limiter]
-      exporters: [otlphttp/prometheus, debug]
+      exporters: [debug, elasticsearch]
     logs:
       receivers: [otlp]
       processors: [resourcedetection, memory_limiter]
-      exporters: [opensearch, debug]
+      exporters: [debug, elasticsearch]
   telemetry:
     metrics:
       level: detailed
